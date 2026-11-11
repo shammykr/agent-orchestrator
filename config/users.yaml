@@ -1,0 +1,13 @@
+# Demo users for local development. Roles: viewer < operator < admin.
+# Passwords (demo only): admin/admin-pass, alice/alice-pass, bob/bob-pass.
+# Hashes are PBKDF2-SHA256 (200k iterations): pbkdf2_sha256$<iterations>$<salt>$<hash>.
+users:
+  - username: admin
+    roles: [admin]
+    password_hash: "pbkdf2_sha256$200000$4TdsYEpHvupSAAOJBBRLig==$r0nPRSmWB9LKJInXH0YUuNuiJqgR1NO9owZ2+S7Iyy4="
+  - username: alice
+    roles: [operator]
+    password_hash: "pbkdf2_sha256$200000$j6zl8QdkMs9xvDrlRHFfdg==$SOQ28zQ4x6DaJ+PdmlN2BsyyhUgac0szr8RM3bWQY9A="
+  - username: bob
+    roles: [viewer]
+    password_hash: "pbkdf2_sha256$200000$a04AbwCZhV2gOR8pxPYVvA==$DAuOOQJqioMavG6PgevDmncX1Xg9vRm6xVck59imAgY="
