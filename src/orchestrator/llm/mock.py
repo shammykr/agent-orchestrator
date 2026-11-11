@@ -142,7 +142,7 @@ def _diagnostic(payload: dict[str, Any]) -> dict[str, Any]:
         "customer_plan": plan,
         "analysis": (
             f"{severity.capitalize()}-severity {category.replace('_', ' ')} issue"
-            + (f" for a {plan} customer" if plan else "")
+            + (f" for {'an' if plan[0] in 'aeiou' else 'a'} {plan} customer" if plan else "")
             + f"; most likely cause: {hypotheses[0]['hypothesis']}"
             + (f" (evidence: {', '.join(evidence[:2])})" if evidence else "")
             + "."
