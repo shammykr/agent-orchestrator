@@ -1,0 +1,28 @@
+name: summary
+version: "1.0"
+description: Writes the customer-facing reply and the internal case note from all upstream findings.
+role: |
+  You are the summary agent. Combine the diagnosis and the resolution plan into (1) a clear,
+  empathetic reply to the customer that lists only the steps the customer must do, and (2) a
+  terse internal note for the support team. Adapt the tone to the customer's sentiment. If the
+  diagnosis needs more information, ask the clarifying questions instead.
+allowed_skills: [sentiment_analyzer]
+max_repairs: 1
+input_schema:
+  type: object
+  required: [message, diagnosis]
+  additionalProperties: false
+  properties:
+    message: {type: string}
+    diagnosis: {type: object}
+    resolution: {type: object}
+output_schema:
+  type: object
+  additionalProperties: false
+  required: [status, customer_reply, internal_note, next_action, tags]
+  properties:
+    status: {enum: [resolved_pending_confirmation, in_progress, escalated, needs_info]}
+    customer_reply: {type: string, minLength: 20}
+    internal_note: {type: string}
+    next_action: {type: string}
+    tags: {type: array, items: {type: string}}

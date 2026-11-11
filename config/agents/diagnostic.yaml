@@ -1,0 +1,46 @@
+name: diagnostic
+version: "1.0"
+description: Classifies the problem, rates severity and ranks root-cause hypotheses with evidence.
+role: |
+  You are the diagnostic agent of a customer-support team. From the customer's message and the
+  skill results (knowledge-base matches, log signals, customer profile), classify the issue, rate
+  its severity and list the most likely root causes with your confidence and the evidence for
+  each. If the message is too vague to diagnose, set needs_more_info and ask precise questions.
+allowed_skills: [knowledge_base_search, log_analyzer, customer_lookup]
+max_repairs: 1
+input_schema:
+  type: object
+  required: [message]
+  properties:
+    message: {type: string, minLength: 1}
+    customer:
+      type: object
+      description: customer_lookup result, when a customer id was found
+  additionalProperties: false
+output_schema:
+  type: object
+  additionalProperties: false
+  required: [category, severity, affected_component, hypotheses, needs_more_info, clarifying_questions, analysis]
+  properties:
+    category:
+      enum: [authentication, billing, performance, data_sync, mobile, notifications, general]
+    severity:
+      enum: [low, medium, high, critical]
+    affected_component: {type: string, minLength: 1}
+    hypotheses:
+      type: array
+      minItems: 1
+      maxItems: 5
+      items:
+        type: object
+        additionalProperties: false
+        required: [hypothesis, confidence, evidence]
+        properties:
+          hypothesis: {type: string, minLength: 3}
+          confidence: {type: number, minimum: 0, maximum: 1}
+          evidence: {type: array, items: {type: string}}
+          kb_article: {type: [string, "null"]}
+    needs_more_info: {type: boolean}
+    clarifying_questions: {type: array, items: {type: string}}
+    customer_plan: {type: [string, "null"]}
+    analysis: {type: string, minLength: 10}

@@ -1,0 +1,47 @@
+name: resolution
+version: "1.0"
+description: Turns a diagnosis into an ordered action plan, decides on escalation and SLA.
+role: |
+  You are the resolution agent. Using the upstream diagnosis, the knowledge-base procedures and
+  the escalation policy result, produce an ordered plan of concrete steps, each owned by the
+  customer, support or engineering. Never repeat steps from previous_resolution: they were already
+  tried and did not work. Escalate when the policy says so or when no untried step remains.
+allowed_skills: [knowledge_base_search, escalation_policy]
+max_repairs: 1
+input_schema:
+  type: object
+  required: [message, diagnosis]
+  additionalProperties: false
+  properties:
+    message: {type: string, minLength: 1}
+    diagnosis:
+      type: object
+      required: [category, severity, hypotheses]
+    previous_resolution:
+      type: object
+      description: plan from an earlier turn that did not resolve the issue
+output_schema:
+  type: object
+  additionalProperties: false
+  required: [plan_type, steps, escalate, escalation_team, sla_hours, risk, estimated_minutes, kb_articles, rationale]
+  properties:
+    plan_type: {enum: [self_service, agent_action, escalation]}
+    steps:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        additionalProperties: false
+        required: [order, action, owner, expected_outcome]
+        properties:
+          order: {type: integer, minimum: 1}
+          action: {type: string, minLength: 3}
+          owner: {enum: [customer, support, engineering]}
+          expected_outcome: {type: string}
+    escalate: {type: boolean}
+    escalation_team: {type: [string, "null"]}
+    sla_hours: {type: integer, minimum: 1}
+    risk: {enum: [low, medium, high]}
+    estimated_minutes: {type: integer, minimum: 1}
+    kb_articles: {type: array, items: {type: string}}
+    rationale: {type: string}
