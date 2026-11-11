@@ -13,8 +13,37 @@ from pydantic import BaseModel, Field
 from orchestrator.contracts import Skill, SkillContext
 
 _WORD = re.compile(r"[a-z0-9]+")
-_STOP = {"the", "a", "an", "is", "to", "and", "or", "of", "in", "on", "for", "my", "i", "it", "we", "our",
-         "with", "not", "be", "are", "was", "this", "that", "when", "at", "can", "cant", "can't", "have"}
+_STOP = {
+    "the",
+    "a",
+    "an",
+    "is",
+    "to",
+    "and",
+    "or",
+    "of",
+    "in",
+    "on",
+    "for",
+    "my",
+    "i",
+    "it",
+    "we",
+    "our",
+    "with",
+    "not",
+    "be",
+    "are",
+    "was",
+    "this",
+    "that",
+    "when",
+    "at",
+    "can",
+    "cant",
+    "can't",
+    "have",
+}
 
 
 class KbSearchInput(BaseModel):

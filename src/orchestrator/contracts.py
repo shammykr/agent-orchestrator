@@ -15,7 +15,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from typing import Any, ClassVar, Generic, TypeVar
+from typing import Any, ClassVar, TypeVar
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
@@ -55,7 +55,7 @@ class SkillContract(BaseModel):
     source: str = ""
 
 
-class Skill(ABC, Generic[InT, OutT]):
+class Skill[InT: BaseModel, OutT: BaseModel](ABC):
     """Base class for skills. Subclass with concrete Input/Output models and implement :meth:`run`.
 
     Skills are discovered automatically (see :mod:`orchestrator.skills`): any concrete subclass
