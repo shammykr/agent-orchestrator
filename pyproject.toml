@@ -31,7 +31,7 @@ dev = ["ruff>=0.6", "mypy>=1.11", "types-PyYAML", "types-jsonschema"]
 where = ["src"]
 
 [tool.ruff]
-line-length = 110
+line-length = 120
 target-version = "py312"
 
 [tool.ruff.lint]
