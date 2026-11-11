@@ -1,0 +1,41 @@
+# One-command startup: docker compose up -d --build
+# API http://localhost:8000 (docs /docs, health /health, metrics /metrics); Redis localhost:6379.
+#
+# To use a real OpenAI-compatible model instead of the mock, set for the app service:
+#   ORCH_LLM_PROVIDER=openai  ORCH_LLM_BASE_URL=...  ORCH_LLM_API_KEY=...  ORCH_LLM_MODEL=...
+
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 20
+
+  app:
+    build: .
+    image: agent-orchestrator:latest
+    environment:
+      ORCH_REDIS_URL: redis://redis:6379/0
+      ORCH_JWT_SECRET: ${ORCH_JWT_SECRET:-dev-only-secret-change-me-0123456789}
+      ORCH_LLM_PROVIDER: ${ORCH_LLM_PROVIDER:-mock}
+      ORCH_LLM_BASE_URL: ${ORCH_LLM_BASE_URL:-https://api.openai.com/v1}
+      ORCH_LLM_API_KEY: ${ORCH_LLM_API_KEY:-}
+      ORCH_LLM_MODEL: ${ORCH_LLM_MODEL:-gpt-4o-mini}
+      ORCH_MOCK_INVALID_RATE: ${ORCH_MOCK_INVALID_RATE:-0}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config:/app/config:ro
+      - ./plugins:/app/plugins:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  redis-data:
