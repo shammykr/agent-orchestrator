@@ -30,6 +30,15 @@ _CATEGORY_WORDS = {
 }
 
 
+_WIDESPREAD = re.compile(
+    r"outage|is down|(all|none) of (our|the) users|no ?one can|nobody can|production|everyone"
+    r"|entire (team|company)"
+)
+_IMPAIRED = re.compile(
+    r"can'?t|cannot|unable|fail|crash|error|declined|blocked|charged twice|double charged|overcharged"
+)
+
+
 class MockLLM:
     provider = "mock"
 
@@ -87,14 +96,9 @@ def _diagnostic(payload: dict[str, Any]) -> dict[str, Any]:
 
     category = articles[0]["category"] if articles else _guess_category(message)
     text = message.lower()
-    if re.search(
-        r"outage|is down|(all|none) of (our|the) users|no ?one can|nobody can|production|everyone|entire (team|company)",
-        text,
-    ):
+    if _WIDESPREAD.search(text):
         severity = "critical" if customer.get("plan") == "enterprise" else "high"
-    elif re.search(
-        r"can'?t|cannot|unable|fail|crash|error|declined|blocked|charged twice|double charged|overcharged", text
-    ) or logs.get("has_errors"):
+    elif _IMPAIRED.search(text) or logs.get("has_errors"):
         severity = "high" if "crash" in logs.get("signals", []) else "medium"
     else:
         severity = "low"
