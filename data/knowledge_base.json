@@ -1,0 +1,128 @@
+[
+  {
+    "id": "KB-1001",
+    "title": "SSO login fails with invalid SAML response",
+    "category": "authentication",
+    "component": "identity-provider",
+    "keywords": ["sso", "saml", "login", "okta", "azure", "signin", "sign", "idp", "403", "401", "unauthorized"],
+    "symptoms": ["users cannot log in with SSO", "redirect loop after identity provider login", "invalid SAML response error"],
+    "steps": [
+      "Confirm the identity provider's signing certificate has not rotated or expired",
+      "Re-upload the current IdP metadata XML in Settings > Security > SSO",
+      "Check that the user's email in the IdP matches their account email exactly",
+      "Clear the SSO session cache with 'Sign out everywhere' and retry the login"
+    ]
+  },
+  {
+    "id": "KB-1002",
+    "title": "Password reset email never arrives or link expired",
+    "category": "authentication",
+    "component": "account-service",
+    "keywords": ["password", "reset", "forgot", "link", "expired", "locked", "lockout"],
+    "symptoms": ["password reset link says expired", "account locked after failed attempts", "reset email not received"],
+    "steps": [
+      "Check whether the account is locked and unlock it from the admin console",
+      "Ask the user to request a new reset link; links expire after 30 minutes",
+      "Verify the reset email was not quarantined by the customer's mail filter",
+      "If still blocked, issue a one-time login link from the admin console"
+    ]
+  },
+  {
+    "id": "KB-2001",
+    "title": "Card payment declined at checkout",
+    "category": "billing",
+    "component": "payments-gateway",
+    "keywords": ["payment", "declined", "card", "checkout", "charge", "3ds", "billing", "insufficient"],
+    "symptoms": ["card declined during checkout", "3-D Secure challenge fails", "subscription renewal failed"],
+    "steps": [
+      "Look up the decline code in the payments dashboard for the failed charge",
+      "If the code is 'authentication_required', ask the customer to complete 3-D Secure",
+      "Ask the customer to confirm the billing address matches the card issuer's records",
+      "Retry the charge or switch the subscription to invoice billing"
+    ]
+  },
+  {
+    "id": "KB-2002",
+    "title": "Invoice amount does not match plan price",
+    "category": "billing",
+    "component": "billing-service",
+    "keywords": ["invoice", "overcharged", "charged", "refund", "proration", "amount", "price", "mismatch", "double"],
+    "symptoms": ["invoice higher than expected", "charged twice", "unexpected proration line items"],
+    "steps": [
+      "Open the invoice and compare line items with the subscription change history",
+      "Explain proration if seats or plan changed mid-cycle",
+      "If a duplicate charge is confirmed, issue a refund for the duplicate payment",
+      "Add a credit note and send the corrected invoice to the billing contact"
+    ]
+  },
+  {
+    "id": "KB-3001",
+    "title": "API requests timing out or slow dashboards",
+    "category": "performance",
+    "component": "api-gateway",
+    "keywords": ["timeout", "slow", "latency", "504", "502", "api", "performance", "lag", "loading", "dashboard"],
+    "symptoms": ["API returns 504 Gateway Timeout", "dashboard takes minutes to load", "intermittent slow responses"],
+    "steps": [
+      "Check the status page and the regional latency dashboards for an ongoing incident",
+      "Identify the slow endpoints from the customer's request ids in the gateway logs",
+      "Ask the customer to page large queries and add date filters to dashboard widgets",
+      "If one tenant is saturating capacity, raise their rate limit or move them to a dedicated pool"
+    ]
+  },
+  {
+    "id": "KB-3002",
+    "title": "HTTP 429 Too Many Requests from the API",
+    "category": "performance",
+    "component": "api-gateway",
+    "keywords": ["429", "rate", "limit", "throttled", "throttling", "quota", "requests"],
+    "symptoms": ["API responds 429", "integration stops syncing during bulk jobs"],
+    "steps": [
+      "Confirm the customer's current rate-limit tier and usage in the API console",
+      "Advise exponential backoff honoring the Retry-After header",
+      "Recommend the bulk endpoints for batch jobs instead of per-record calls",
+      "Offer a temporary rate-limit increase for one-off migrations"
+    ]
+  },
+  {
+    "id": "KB-4001",
+    "title": "Data not syncing between CRM integration and workspace",
+    "category": "data_sync",
+    "component": "integration-sync",
+    "keywords": ["sync", "syncing", "integration", "crm", "salesforce", "hubspot", "missing", "records", "webhook", "outdated"],
+    "symptoms": ["records missing after sync", "changes in the CRM not reflected", "sync stuck in pending"],
+    "steps": [
+      "Check the integration's last successful sync time and error log",
+      "Re-authorize the CRM connection; expired OAuth tokens stop syncing silently",
+      "Trigger a manual full resync for the affected object type",
+      "Verify field mappings did not change after a CRM schema update"
+    ]
+  },
+  {
+    "id": "KB-5001",
+    "title": "Mobile app crashes on launch",
+    "category": "mobile",
+    "component": "mobile-app",
+    "keywords": ["mobile", "app", "crash", "crashes", "ios", "android", "launch", "freezes", "closes"],
+    "symptoms": ["app closes immediately after opening", "app freezes on the splash screen"],
+    "steps": [
+      "Confirm the app version and OS version; versions older than the minimum are unsupported",
+      "Ask the user to update to the latest app release",
+      "Clear the app cache (Android) or offload and reinstall the app (iOS)",
+      "Collect the crash report id from Settings > Diagnostics for engineering"
+    ]
+  },
+  {
+    "id": "KB-6001",
+    "title": "Email notifications not being delivered",
+    "category": "notifications",
+    "component": "notification-service",
+    "keywords": ["email", "notification", "notifications", "alerts", "delivered", "spam", "bounce"],
+    "symptoms": ["no notification emails received", "alerts go to spam", "emails bounce"],
+    "steps": [
+      "Check the notification preferences for the affected users",
+      "Look up the recipient in the email provider's suppression list and remove bounces",
+      "Ask the customer to allowlist our sending domain and check SPF/DKIM alignment",
+      "Send a test notification and confirm delivery in the message log"
+    ]
+  }
+]
