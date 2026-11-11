@@ -1,0 +1,52 @@
+# Follow-up on an existing case when the previous fix did not work. Skips diagnosis and reasons
+# over the findings earlier turns left in the shared context store.
+name: case_followup
+version: "1.0"
+description: Re-plan an unresolved case using the earlier diagnosis and excluding steps already tried.
+priority: 10
+route:
+  has_history: true
+  matches: "didn'?t work|did not work|doesn'?t work|still|again|same (issue|problem|error)|no luck|not fixed|tried"
+
+stages:
+  - id: resolve
+    agent: resolution
+    skills:
+      - skill: knowledge_base_search
+        args:
+          query: {$coalesce: ["$.previous.diagnose.hypotheses[0].hypothesis", $.message]}
+          top_k: 3
+      - skill: escalation_policy
+        args:
+          severity: {$coalesce: [$.previous.diagnose.severity, medium]}
+          category: {$coalesce: [$.previous.diagnose.category, general]}
+          customer_plan: $.previous.diagnose.customer_plan
+          previous_attempts: {$count: $.history}
+    inputs:
+      message: $.message
+      diagnosis: $.previous.diagnose
+      previous_resolution: $.previous.resolve
+    on_failure:
+      retries: 1
+      otherwise: skip
+
+  - id: summarize
+    agent: summary
+    skills:
+      - skill: sentiment_analyzer
+        args: {text: $.message}
+    inputs:
+      message: $.message
+      diagnosis: {$coalesce: [$.previous.diagnose, {category: general, severity: medium, hypotheses: []}]}
+      resolution: $.stages.resolve
+    on_failure:
+      retries: 1
+      default_output:
+        status: in_progress
+        customer_reply: "Thanks for letting us know it is still not working. We are looking into it and will follow up shortly."
+        internal_note: "Summary agent failed on follow-up; reply generated from the pipeline default."
+        next_action: "Review the follow-up plan and reply manually"
+        tags: [summary_fallback, followup]
+
+response:
+  stage: summarize
