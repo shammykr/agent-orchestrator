@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     llm_model: str = "gpt-4o-mini"
     llm_timeout_seconds: float = 30.0
     llm_temperature: float = 0.0
+    # How to ask for JSON: "json_schema" (strict structured outputs), "json_object" (JSON mode,
+    # widely supported) or "none" (rely on the prompt; output is still parsed and validated)
+    llm_response_format: Literal["json_schema", "json_object", "none"] = "json_object"
     # Mock only: fraction of calls that return malformed output, to exercise validation and fallbacks
     mock_invalid_rate: float = 0.0
     mock_seed: int = 7
